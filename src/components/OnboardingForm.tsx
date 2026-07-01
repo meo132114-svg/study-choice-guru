@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Check, ChevronDown, Search, Sparkles } from "luc
 
 interface Props {
   onBack: () => void;
+  onComplete: (data: unknown) => void;
 }
 
 const SUBJECTS = [
