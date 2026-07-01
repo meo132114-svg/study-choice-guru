@@ -35,7 +35,7 @@ const SCHOOLS = [
   "THPT Chuyên Nguyễn Trãi (Hải Dương)",
 ];
 
-export function OnboardingForm({ onBack }: Props) {
+export function OnboardingForm({ onBack, onComplete }: Props) {
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState({
     fullName: "",
