@@ -69,9 +69,7 @@ export function OnboardingForm({ onBack, onComplete }: Props) {
   };
 
   const handleSubmit = () => {
-    // Next step: Holland Code test — hook up here.
-    console.log("Form submit", form);
-    alert("Đã lưu thông tin! Bước tiếp theo: Trắc nghiệm Holland Code (sẽ được tích hợp).");
+    onComplete(form);
   };
 
   return (
