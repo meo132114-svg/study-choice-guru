@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Check, ChevronDown, Search, Sparkles } from "luc
 
 interface Props {
   onBack: () => void;
+  onComplete: (data: unknown) => void;
 }
 
 const SUBJECTS = [
@@ -34,7 +35,7 @@ const SCHOOLS = [
   "THPT Chuyên Nguyễn Trãi (Hải Dương)",
 ];
 
-export function OnboardingForm({ onBack }: Props) {
+export function OnboardingForm({ onBack, onComplete }: Props) {
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState({
     fullName: "",
@@ -68,9 +69,7 @@ export function OnboardingForm({ onBack }: Props) {
   };
 
   const handleSubmit = () => {
-    // Next step: Holland Code test — hook up here.
-    console.log("Form submit", form);
-    alert("Đã lưu thông tin! Bước tiếp theo: Trắc nghiệm Holland Code (sẽ được tích hợp).");
+    onComplete(form);
   };
 
   return (
