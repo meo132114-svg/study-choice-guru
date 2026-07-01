@@ -130,8 +130,6 @@
   color: var(--color-foreground);
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
-}
-@utility input {
   &:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 4px oklch(0.53 0.24 300 / 0.12);
