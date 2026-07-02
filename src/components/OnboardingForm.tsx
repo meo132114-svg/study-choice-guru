@@ -34,12 +34,38 @@ export function OnboardingForm({ onBack, onComplete }: Props) {
   });
   const [schoolQuery, setSchoolQuery] = useState("");
   const [schoolOpen, setSchoolOpen] = useState(false);
+  const [schools, setSchools] = useState<Truong[]>([]);
+  const [schoolsLoading, setSchoolsLoading] = useState(true);
+  const [schoolsError, setSchoolsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabaseDataTruong
+        .from("truong_thpt")
+        .select("id, ten_truong, khu_vuc, ma_truong")
+        .order("ten_truong", { ascending: true });
+      if (cancelled) return;
+      if (error) setSchoolsError(error.message);
+      else setSchools((data ?? []) as Truong[]);
+      setSchoolsLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredSchools = useMemo(() => {
     const q = schoolQuery.trim().toLowerCase();
-    if (!q) return SCHOOLS;
-    return SCHOOLS.filter((s) => s.toLowerCase().includes(q));
-  }, [schoolQuery]);
+    const base = q
+      ? schools.filter(
+          (s) =>
+            s.ten_truong.toLowerCase().includes(q) ||
+            (s.khu_vuc ?? "").toLowerCase().includes(q),
+        )
+      : schools;
+    return base.slice(0, 100);
+  }, [schoolQuery, schools]);
 
   const canNext =
     form.fullName.trim() && form.grade && form.school;
