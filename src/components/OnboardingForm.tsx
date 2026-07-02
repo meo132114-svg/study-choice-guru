@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Search, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Loader2, Search, Sparkles } from "lucide-react";
+import { supabaseDataTruong, type Truong } from "@/lib/supabase";
 
 interface Props {
   onBack: () => void;
@@ -19,22 +20,6 @@ const SUBJECTS = [
   "Nghệ thuật (Âm nhạc, Mĩ thuật)",
 ];
 
-// TODO: replace with Supabase query to schema `data_truong`, table `truong_thpt`.
-const SCHOOLS = [
-  "THPT Chuyên Hà Nội – Amsterdam",
-  "THPT Chuyên Khoa học Tự nhiên",
-  "THPT Chuyên Sư phạm",
-  "THPT Chu Văn An (Hà Nội)",
-  "THPT Kim Liên (Hà Nội)",
-  "THPT Lê Hồng Phong (TP.HCM)",
-  "THPT Nguyễn Thượng Hiền (TP.HCM)",
-  "THPT Trần Đại Nghĩa (TP.HCM)",
-  "THPT Chuyên Lê Quý Đôn (Đà Nẵng)",
-  "THPT Phan Châu Trinh (Đà Nẵng)",
-  "THPT Chuyên Lê Hồng Phong (Nam Định)",
-  "THPT Chuyên Nguyễn Trãi (Hải Dương)",
-];
-
 export function OnboardingForm({ onBack, onComplete }: Props) {
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState({
@@ -49,12 +34,38 @@ export function OnboardingForm({ onBack, onComplete }: Props) {
   });
   const [schoolQuery, setSchoolQuery] = useState("");
   const [schoolOpen, setSchoolOpen] = useState(false);
+  const [schools, setSchools] = useState<Truong[]>([]);
+  const [schoolsLoading, setSchoolsLoading] = useState(true);
+  const [schoolsError, setSchoolsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabaseDataTruong
+        .from("truong_thpt")
+        .select("id, ten_truong, khu_vuc, ma_truong")
+        .order("ten_truong", { ascending: true });
+      if (cancelled) return;
+      if (error) setSchoolsError(error.message);
+      else setSchools((data ?? []) as Truong[]);
+      setSchoolsLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredSchools = useMemo(() => {
     const q = schoolQuery.trim().toLowerCase();
-    if (!q) return SCHOOLS;
-    return SCHOOLS.filter((s) => s.toLowerCase().includes(q));
-  }, [schoolQuery]);
+    const base = q
+      ? schools.filter(
+          (s) =>
+            s.ten_truong.toLowerCase().includes(q) ||
+            (s.khu_vuc ?? "").toLowerCase().includes(q),
+        )
+      : schools;
+    return base.slice(0, 100);
+  }, [schoolQuery, schools]);
 
   const canNext =
     form.fullName.trim() && form.grade && form.school;
@@ -154,22 +165,35 @@ export function OnboardingForm({ onBack, onComplete }: Props) {
                   </div>
                   {schoolOpen && (
                     <div className="absolute z-10 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-border bg-popover p-1 shadow-lg">
-                      {filteredSchools.length === 0 && (
+                      {schoolsLoading && (
+                        <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải danh sách trường...
+                        </div>
+                      )}
+                      {schoolsError && (
+                        <div className="px-3 py-2 text-sm text-destructive">Lỗi: {schoolsError}</div>
+                      )}
+                      {!schoolsLoading && !schoolsError && filteredSchools.length === 0 && (
                         <div className="px-3 py-2 text-sm text-muted-foreground">Không có kết quả</div>
                       )}
                       {filteredSchools.map((s) => (
                         <button
-                          key={s}
+                          key={s.id}
                           type="button"
                           onClick={() => {
-                            setForm({ ...form, school: s });
+                            setForm({ ...form, school: s.ten_truong });
                             setSchoolQuery("");
                             setSchoolOpen(false);
                           }}
-                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                          className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
                         >
-                          {s}
-                          {form.school === s && <Check className="h-4 w-4 text-primary" />}
+                          <span className="truncate">
+                            {s.ten_truong}
+                            {s.khu_vuc && (
+                              <span className="ml-2 text-xs text-muted-foreground">· {s.khu_vuc}</span>
+                            )}
+                          </span>
+                          {form.school === s.ten_truong && <Check className="h-4 w-4 shrink-0 text-primary" />}
                         </button>
                       ))}
                     </div>
