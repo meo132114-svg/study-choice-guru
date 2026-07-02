@@ -5,7 +5,7 @@ interface HeroProps {
 }
 
 const metrics = [
-  { icon: Users, big: "100+", small: "Trường đại học tin dùng" },
+  { icon: Users, big: "80+", small: "Trường đại học tin dùng" },
   { icon: Building2, big: "5000+", small: "Cơ sở dữ liệu điểm chuẩn" },
   { icon: ThumbsUp, big: "95%", small: "Mức độ hài lòng sau tư vấn" },
 ];
@@ -41,10 +41,10 @@ export function Hero({ onStart }: HeroProps) {
           Nền tảng định hướng nghề nghiệp #1 dành cho học sinh THPT
         </div>
 
-        <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+        <h1 className="font-display text-4xl font-extrabold leading-[1.25] tracking-tight text-foreground sm:text-5xl md:text-6xl pb-2">
           ĐỊNH HƯỚNG TƯƠNG LAI
           <br />
-          <span className="text-holo">CHỌN ĐÚNG TỔ HỢP</span>
+          <span className="text-holo inline-block pb-2">CHỌN ĐÚNG TỔ HỢP</span>
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
