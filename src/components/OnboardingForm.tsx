@@ -165,22 +165,35 @@ export function OnboardingForm({ onBack, onComplete }: Props) {
                   </div>
                   {schoolOpen && (
                     <div className="absolute z-10 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-border bg-popover p-1 shadow-lg">
-                      {filteredSchools.length === 0 && (
+                      {schoolsLoading && (
+                        <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải danh sách trường...
+                        </div>
+                      )}
+                      {schoolsError && (
+                        <div className="px-3 py-2 text-sm text-destructive">Lỗi: {schoolsError}</div>
+                      )}
+                      {!schoolsLoading && !schoolsError && filteredSchools.length === 0 && (
                         <div className="px-3 py-2 text-sm text-muted-foreground">Không có kết quả</div>
                       )}
                       {filteredSchools.map((s) => (
                         <button
-                          key={s}
+                          key={s.id}
                           type="button"
                           onClick={() => {
-                            setForm({ ...form, school: s });
+                            setForm({ ...form, school: s.ten_truong });
                             setSchoolQuery("");
                             setSchoolOpen(false);
                           }}
-                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                          className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
                         >
-                          {s}
-                          {form.school === s && <Check className="h-4 w-4 text-primary" />}
+                          <span className="truncate">
+                            {s.ten_truong}
+                            {s.khu_vuc && (
+                              <span className="ml-2 text-xs text-muted-foreground">· {s.khu_vuc}</span>
+                            )}
+                          </span>
+                          {form.school === s.ten_truong && <Check className="h-4 w-4 shrink-0 text-primary" />}
                         </button>
                       ))}
                     </div>
