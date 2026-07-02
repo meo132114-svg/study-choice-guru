@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Search, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Loader2, Search, Sparkles } from "lucide-react";
+import { supabaseDataTruong, type Truong } from "@/lib/supabase";
 
 interface Props {
   onBack: () => void;
@@ -17,22 +18,6 @@ const SUBJECTS = [
   "Tin học",
   "Giáo dục thể chất",
   "Nghệ thuật (Âm nhạc, Mĩ thuật)",
-];
-
-// TODO: replace with Supabase query to schema `data_truong`, table `truong_thpt`.
-const SCHOOLS = [
-  "THPT Chuyên Hà Nội – Amsterdam",
-  "THPT Chuyên Khoa học Tự nhiên",
-  "THPT Chuyên Sư phạm",
-  "THPT Chu Văn An (Hà Nội)",
-  "THPT Kim Liên (Hà Nội)",
-  "THPT Lê Hồng Phong (TP.HCM)",
-  "THPT Nguyễn Thượng Hiền (TP.HCM)",
-  "THPT Trần Đại Nghĩa (TP.HCM)",
-  "THPT Chuyên Lê Quý Đôn (Đà Nẵng)",
-  "THPT Phan Châu Trinh (Đà Nẵng)",
-  "THPT Chuyên Lê Hồng Phong (Nam Định)",
-  "THPT Chuyên Nguyễn Trãi (Hải Dương)",
 ];
 
 export function OnboardingForm({ onBack, onComplete }: Props) {
