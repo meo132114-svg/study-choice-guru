@@ -9,9 +9,22 @@ export const supabaseDataTruong = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, 
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+export const supabasePublic = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
+
 export type Truong = {
   id: number;
   ten_truong: string;
   khu_vuc: string | null;
   ma_truong: string | null;
+};
+
+export type NganhDaoTao = {
+  id: number;
+  ma_nganh: string;
+  ten_nganh: string;
+  level: number;
+  parent_code: string | null;
+  trinh_do: string | null;
 };
