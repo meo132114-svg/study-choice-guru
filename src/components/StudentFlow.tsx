@@ -36,9 +36,9 @@ export type FlowData = {
 };
 
 const GRADES = [
-  { id: "10" as const, icon: Backpack, emoji: "🎒", label: "Lớp 10", hint: "Tư vấn tổ hợp môn học" },
-  { id: "11" as const, icon: BookOpen, emoji: "📚", label: "Lớp 11", hint: "Xem tổ hợp mở ra được các ngành gì" },
-  { id: "12" as const, icon: GraduationCap, emoji: "🎓", label: "Lớp 12", hint: "Gợi ý ngành, trường xét tuyển" },
+  { id: "10" as const, emoji: "🎒", label: "Lớp 10", hint: "Tư vấn tổ hợp môn học" },
+  { id: "11" as const, emoji: "📚", label: "Lớp 11", hint: "Xem tổ hợp mở ra được các ngành gì" },
+  { id: "12" as const, emoji: "🎓", label: "Lớp 12", hint: "Gợi ý ngành, trường xét tuyển" },
 ];
 
 const MON_BAT_BUOC = ["Toán", "Ngữ văn", "Tiếng Anh", "Lịch sử", "GDTC", "GDĐP", "GDQP", "HĐTN-HN"];
