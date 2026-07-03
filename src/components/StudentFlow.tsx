@@ -2,14 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
   Check,
   CheckCircle2,
-  ChevronDown,
-  GraduationCap,
   Layers,
   Loader2,
-  Backpack,
   Search,
   Sparkles,
 } from "lucide-react";
