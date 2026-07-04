@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import {
   PolarAngleAxis,
@@ -13,6 +14,7 @@ interface Props {
   scores: HollandScores;
   name?: string;
   onHome: () => void;
+  onViewSuggestions: () => void;
 }
 
 const CODE_META: Record<
@@ -65,12 +67,20 @@ const CODE_META: Record<
 
 const ORDER: HollandCode[] = ["R", "I", "A", "S", "E", "C"];
 
-export function HollandResults({ scores, name, onHome }: Props) {
-  const ranked = ORDER
-    .map((c) => ({ code: c, score: scores[c] }))
-    .sort((a, b) => b.score - a.score);
+export function HollandResults({ scores, name, onHome, onViewSuggestions}: Props) {
+  const ranked = useMemo(() => {
+    return ORDER.map((c) => ({ code: c, score: scores[c] })).sort(
+      (a, b) => b.score - a.score
+    );
+  }, [scores]);
+
   const top = ranked[0].code;
   const meta = CODE_META[top];
+
+  // Tạo chuỗi 6 mã kết hợp theo thứ tự điểm giảm dần (VD: "RISACE")
+  const hollandString = useMemo(() => {
+    return ranked.map((r) => r.code).join("");
+  }, [ranked]);
 
   const chartData = ORDER.map((c) => ({
     code: `${c} (${scores[c]})`,
@@ -101,6 +111,16 @@ export function HollandResults({ scores, name, onHome }: Props) {
               Xu hướng nghề nghiệp mạnh nhất:{" "}
               <span className="font-semibold text-foreground">{meta.title}</span>
             </p>
+
+            {/* Khối hiển thị chuỗi kết hợp 6 mã đẹp mắt */}
+            <div className="mt-4 inline-flex items-center gap-2.5 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 to-transparent px-4 py-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Mã Holland Code của em:
+              </span>
+              <span className="font-mono text-2xl font-black tracking-widest text-primary">
+                {hollandString}
+              </span>
+            </div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -235,10 +255,10 @@ export function HollandResults({ scores, name, onHome }: Props) {
 
         <div className="text-center">
           <button
-            onClick={onHome}
+            onClick={onViewSuggestions}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary/60 hover:text-primary"
           >
-            Về trang chủ
+            Xem gợi ý tổ hợp
           </button>
         </div>
       </div>

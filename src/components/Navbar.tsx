@@ -15,7 +15,7 @@ export function Navbar() {
             <Sparkles className="h-4 w-4" />
           </span>
           <span className="font-display text-lg font-bold tracking-tight">
-            Edu<span className="text-primary">Path</span>
+            Navi<span className="text-primary">Career</span>
           </span>
         </a>
         <ul className="hidden items-center gap-8 md:flex">

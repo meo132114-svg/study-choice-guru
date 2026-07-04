@@ -1,115 +1,68 @@
-import * as React from "react";
-import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import React, { useMemo } from 'react';
+import { ArrowLeft, Sparkles, BookOpen, GraduationCap } from 'lucide-react';
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+// Dữ liệu giả lập (Bạn chỉ cần đổi data ở đây khi muốn cập nhật)
+const SUGGESTED_DATA = [
+  { ma_tohop: "A00", ten_tohop: "Toán - Lý - Hóa", mons: ["Toán", "Lý", "Hóa"], match: 95, nganhs: ["Công nghệ thông tin", "Kỹ thuật điện"] },
+  { ma_tohop: "A01", ten_tohop: "Toán - Lý - Anh", mons: ["Toán", "Lý", "Anh"], match: 88, nganhs: ["Khoa học máy tính", "Quản trị kinh doanh"] },
+  { ma_tohop: "D01", ten_tohop: "Toán - Văn - Anh", mons: ["Toán", "Văn", "Anh"], match: 82, nganhs: ["Ngôn ngữ Anh", "Marketing"] },
+  { ma_tohop: "V00", ten_tohop: "Toán - Lý - Vẽ", mons: ["Toán", "Lý", "Vẽ"], match: 75, nganhs: ["Kiến trúc", "Thiết kế đồ họa"] },
+];
 
-const AlertDialog = AlertDialogPrimitive.Root;
+export default function HollandSubjectSuggestion() {
+  
+  return (
+    <div className="min-h-screen bg-gray-50 pb-12">
+      <div className="max-w-3xl mx-auto px-4 pt-8">
+        <button onClick={() => window.history.back()} className="flex items-center text-gray-500 mb-6 hover:text-black">
+          <ArrowLeft className="w-5 h-5 mr-2" /> Quay lại
+        </button>
 
-const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
+        <div className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Gợi ý Tổ hợp môn phù hợp</h1>
+          <p className="text-gray-500 mt-2">Dựa trên thế mạnh của bạn, đây là các lựa chọn tối ưu nhất</p>
+        </div>
 
-const AlertDialogPortal = AlertDialogPrimitive.Portal;
+        <div className="space-y-4">
+          {SUGGESTED_DATA.map((item, index) => (
+            <div key={item.ma_tohop} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">{item.ten_tohop}</h3>
+                  <span className="text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded uppercase">{item.ma_tohop}</span>
+                </div>
+                <div className="text-center">
+                  <span className="block text-xl font-black text-indigo-600">{item.match}%</span>
+                  <span className="text-[10px] text-gray-400 uppercase">Phù hợp</span>
+                </div>
+              </div>
 
-const AlertDialogOverlay = React.forwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <AlertDialogPrimitive.Overlay
-    className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className,
-    )}
-    {...props}
-    ref={ref}
-  />
-));
-AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
+              {/* Các môn trong tổ hợp */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {item.mons.map(mon => (
+                  <span key={mon} className="flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-sm font-medium">
+                    <BookOpen className="w-3 h-3" /> {mon}
+                  </span>
+                ))}
+              </div>
 
-const AlertDialogContent = React.forwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <AlertDialogPortal>
-    <AlertDialogOverlay />
-    <AlertDialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
-        className,
-      )}
-      {...props}
-    />
-  </AlertDialogPortal>
-));
-AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName;
-
-const AlertDialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-2 text-center sm:text-left", className)} {...props} />
-);
-AlertDialogHeader.displayName = "AlertDialogHeader";
-
-const AlertDialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
-    {...props}
-  />
-);
-AlertDialogFooter.displayName = "AlertDialogFooter";
-
-const AlertDialogTitle = React.forwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <AlertDialogPrimitive.Title
-    ref={ref}
-    className={cn("text-lg font-semibold", className)}
-    {...props}
-  />
-));
-AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName;
-
-const AlertDialogDescription = React.forwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Description>
->(({ className, ...props }, ref) => (
-  <AlertDialogPrimitive.Description
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-));
-AlertDialogDescription.displayName = AlertDialogPrimitive.Description.displayName;
-
-const AlertDialogAction = React.forwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Action>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
->(({ className, ...props }, ref) => (
-  <AlertDialogPrimitive.Action ref={ref} className={cn(buttonVariants(), className)} {...props} />
-));
-AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
-
-const AlertDialogCancel = React.forwardRef<
-  React.ElementRef<typeof AlertDialogPrimitive.Cancel>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel>
->(({ className, ...props }, ref) => (
-  <AlertDialogPrimitive.Cancel
-    ref={ref}
-    className={cn(buttonVariants({ variant: "outline" }), "mt-2 sm:mt-0", className)}
-    {...props}
-  />
-));
-AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
-
-export {
-  AlertDialog,
-  AlertDialogPortal,
-  AlertDialogOverlay,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-};
+              {/* Ngành gợi ý */}
+              <div className="pt-4 border-t border-gray-50">
+                <p className="text-xs font-semibold text-gray-400 uppercase mb-2 flex items-center">
+                  <GraduationCap className="w-3 h-3 mr-1" /> Ngành gợi ý
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {item.nganhs.map(nganh => (
+                    <span key={nganh} className="text-sm text-gray-600 border border-gray-200 px-3 py-1 rounded-lg bg-gray-50">
+                      {nganh}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

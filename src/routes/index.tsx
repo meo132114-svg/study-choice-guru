@@ -5,20 +5,22 @@ import { Hero } from "@/components/Hero";
 import { StudentFlow, type FlowStep, type FlowData } from "@/components/StudentFlow";
 import { HollandTest, type HollandScores } from "@/components/HollandTest";
 import { HollandResults } from "@/components/HollandResults";
+import HollandSubjectSuggestion from "@/components/HollandSubjectSuggestion"; // Sửa lại đường dẫn nếu cần
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "EduPath — Định hướng tổ hợp môn THPT bằng AI" },
+      { title: "NaviCareer — Định hướng tổ hợp môn THPT bằng AI" },
       { name: "description", content: "Chọn tổ hợp môn THPT phù hợp: xem cấu trúc chương trình, so sánh tổ hợp của trường và nhận tư vấn cá nhân hoá trong vài phút." },
-      { property: "og:title", content: "EduPath — Định hướng tổ hợp môn THPT" },
+      { property: "og:title", content: "NaviCareer — Định hướng tổ hợp môn THPT" },
       { property: "og:description", content: "Tư vấn tổ hợp môn học và ngành nghề cho học sinh THPT dựa trên dữ liệu học tập cá nhân." },
     ],
   }),
   component: Index,
 });
 
-type Phase = "home" | "flow" | "holland" | "result";
+// 1. Thêm "suggestion" vào type Phase
+type Phase = "home" | "flow" | "holland" | "result" | "suggestion";
 
 const STEPS = [
   { id: 1, label: "Khối lớp" },
@@ -98,13 +100,23 @@ function Index() {
             }}
           />
         )}
+        {/* 2. Sửa lại logic gọi hàm ở đây */}
         {phase === "result" && scores && (
-          <HollandResults scores={scores} name={profile?.ho_ten} onHome={reset} />
+          <HollandResults 
+            scores={scores} 
+            name={profile?.ho_ten} 
+            onHome={reset} 
+            onViewSuggestions={() => setPhase("suggestion")}
+          />
+        )}
+        {/* 3. Hiển thị component gợi ý */}
+        {phase === "suggestion" && (
+            <HollandSubjectSuggestion />
         )}
       </main>
       <footer id="lien-he" className="border-t border-border bg-card/50 py-8">
         <div className="mx-auto max-w-6xl px-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} EduPath · Định hướng tổ hợp môn THPT bằng AI · Made in Vietnam
+          © {new Date().getFullYear()} NaviCareer · Định hướng tổ hợp môn THPT bằng AI · Made in Vietnam
         </div>
       </footer>
     </div>

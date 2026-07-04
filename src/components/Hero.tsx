@@ -14,7 +14,7 @@ const reviews = [
   {
     name: "Nguyễn Minh Anh",
     meta: "Lớp 12A1 · THPT Chuyên Hà Nội – Amsterdam",
-    text: "Trắc nghiệm ngắn nhưng gợi ý tổ hợp cực kỳ chính xác. Em đã tự tin chọn khối A00 nhờ kết quả từ EduPath.",
+    text: "Trắc nghiệm ngắn nhưng gợi ý tổ hợp cực kỳ chính xác. Em đã tự tin chọn khối A00 nhờ kết quả từ NaviCareer.",
   },
   {
     name: "Trần Gia Bảo",
@@ -24,7 +24,7 @@ const reviews = [
   {
     name: "Lê Thảo Vy",
     meta: "Lớp 12C · THPT Phan Châu Trinh (Đà Nẵng)",
-    text: "Em đang phân vân giữa D01 và A01, EduPath đã giúp em quyết định trong 15 phút. Rất đáng thử!",
+    text: "Em đang phân vân giữa D01 và A01, NaviCareer đã giúp em quyết định trong 15 phút. Rất đáng thử!",
   },
 ];
 
@@ -84,7 +84,7 @@ export function Hero({ onStart }: HeroProps) {
         {/* Reviews */}
         <div id="danh-gia" className="mt-20">
           <h2 className="font-display text-2xl font-bold sm:text-3xl">
-            Học sinh nói gì về <span className="text-primary">EduPath</span>?
+            Học sinh nói gì về <span className="text-primary">NaviCareer</span>?
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">Những chia sẻ thật từ học sinh đã sử dụng nền tảng.</p>
 

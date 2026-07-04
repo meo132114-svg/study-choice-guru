@@ -603,7 +603,7 @@ function Step4({
       <Header
         step={4}
         title="Thông tin chi tiết của em"
-        desc="Giúp EduPath cá nhân hoá tư vấn tổ hợp môn và ngành học phù hợp nhất."
+        desc="Giúp NaviCareer cá nhân hoá tư vấn tổ hợp môn và ngành học phù hợp nhất."
       />
 
       <Field label="Họ và tên">

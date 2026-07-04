@@ -77,10 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "EduPath — Định hướng tổ hợp môn THPT bằng AI" },
+      { title: "NaviCareer — Định hướng tổ hợp môn THPT bằng AI" },
       { name: "description", content: "Chọn tổ hợp môn tối ưu bằng trắc nghiệm Holland Code, năng lực học tập và AI cá nhân hóa." },
-      { name: "author", content: "EduPath" },
-      { property: "og:title", content: "EduPath — Định hướng tổ hợp môn THPT" },
+      { name: "author", content: "NaviCareer" },
+      { property: "og:title", content: "NaviCareer — Định hướng tổ hợp môn THPT" },
       { property: "og:description", content: "Trắc nghiệm Holland Code + AI gợi ý tổ hợp môn phù hợp trong 15 phút." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -1,5 +1,5 @@
 /*
-# Create initial schema for EduPath application
+# Create initial schema for NaviCareer application
 
 1. New Schemas
 - `data_truong` - stores reference data for schools and education majors
