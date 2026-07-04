@@ -27,10 +27,12 @@ export type FlowStep = 1 | 2 | 3 | 4;
 export type FlowData = {
   truong: string;
   khoi_lop: "10" | "11" | "12";
-  to_hop_da_chon: string;
   ho_ten: string;
   xep_loai_lop9: "Tốt" | "Khá" | "Đạt" | "Chưa đạt";
-  diem_tuyen_sinh: number;
+  diem_toan: number;
+  diem_van: number;
+  diem_anh: number;
+  diem_tong: number;
   mon_gioi: string[];
   nganh_du_kien: string;
 };
@@ -49,8 +51,6 @@ const TO_HOP = [
     id: "TH1",
     name: "Tổ hợp TH1",
     lop: 4,
-    tint: "from-rose-500/15 to-orange-500/10",
-    accent: "text-rose-600",
     mon: ["Địa lí", "GDKT&PL", "Sinh học", "Tin học"],
     chuyen_de: ["Toán", "Văn", "Địa"],
     so_luoc: "Chuyên về các môn xã hội, dành cho học sinh không tư duy tốt các môn tự nhiên.",
@@ -59,8 +59,6 @@ const TO_HOP = [
     id: "TH2",
     name: "Tổ hợp TH2",
     lop: 4,
-    tint: "from-sky-500/15 to-cyan-500/10",
-    accent: "text-sky-600",
     mon: ["Vật lý", "Hóa học", "Sinh học", "Công nghệ (NN)"],
     chuyen_de: ["Toán", "Lý", "Hóa"],
     so_luoc: "Tập trung các trường tuyển khối A, B, D các ngành có liên quan. Dành cho học sinh tư duy tốt và giỏi đều các môn tự nhiên.",
@@ -69,8 +67,6 @@ const TO_HOP = [
     id: "TH3",
     name: "Tổ hợp TH3",
     lop: 5,
-    tint: "from-violet-500/15 to-purple-500/10",
-    accent: "text-violet-600",
     mon: ["Vật lý", "Hóa học", "GDKT&PL", "Công nghệ (CN)"],
     chuyen_de: ["Toán", "Lý", "Hóa"],
     so_luoc: "Dành cho học sinh tư duy tốt về 3 môn tự nhiên Toán, Lý, Hóa.",
@@ -79,8 +75,6 @@ const TO_HOP = [
     id: "TH4",
     name: "Tổ hợp TH4",
     lop: 5,
-    tint: "from-emerald-500/15 to-teal-500/10",
-    accent: "text-emerald-600",
     mon: ["Vật lý", "Hóa học", "Địa lý", "Tin học"],
     chuyen_de: ["Toán", "Lý", "Hóa"],
     so_luoc: "Dành cho học sinh tư duy tốt về 3 môn tự nhiên Toán, Lý, Hóa.",
@@ -98,10 +92,11 @@ export function StudentFlow({ onBack, onComplete, onStepChange }: Props) {
   const [step, setStep] = useState<FlowStep>(1);
   const [truong, setTruong] = useState("");
   const [khoiLop, setKhoiLop] = useState<"10" | "11" | "12" | "">("");
-  const [toHopId, setToHopId] = useState<string>("");
   const [hoTen, setHoTen] = useState("");
   const [xepLoai, setXepLoai] = useState<(typeof XEP_LOAI)[number] | "">("");
-  const [diemTS, setDiemTS] = useState("");
+  const [diemToan, setDiemToan] = useState("");
+  const [diemVan, setDiemVan] = useState("");
+  const [diemAnh, setDiemAnh] = useState("");
   const [monGioi, setMonGioi] = useState<string[]>([]);
   const [nganh, setNganh] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -116,13 +111,17 @@ export function StudentFlow({ onBack, onComplete, onStepChange }: Props) {
   const handleFinish = async () => {
     setSubmitting(true);
     setSubmitError(null);
+    const t = Number(diemToan);
+    const v = Number(diemVan);
+    const a = Number(diemAnh);
     const payload = {
       truong_thpt: truong,
       khoi_lop: khoiLop,
-      to_hop_da_chon: toHopId,
       ho_ten: hoTen,
       xep_loai_lop9: xepLoai,
-      diem_tuyen_sinh: Number(diemTS) || null,
+      diem_toan: t,
+      diem_van: v,
+      diem_anh: a,
       mon_gioi: monGioi,
       nganh_du_kien: nganh || null,
     };
@@ -135,10 +134,12 @@ export function StudentFlow({ onBack, onComplete, onStepChange }: Props) {
     onComplete({
       truong,
       khoi_lop: khoiLop as "10" | "11" | "12",
-      to_hop_da_chon: toHopId,
       ho_ten: hoTen,
       xep_loai_lop9: xepLoai as (typeof XEP_LOAI)[number],
-      diem_tuyen_sinh: Number(diemTS),
+      diem_toan: t,
+      diem_van: v,
+      diem_anh: a,
+      diem_tong: +(t + v + a).toFixed(2),
       mon_gioi: monGioi,
       nganh_du_kien: nganh,
     });
@@ -164,22 +165,19 @@ export function StudentFlow({ onBack, onComplete, onStepChange }: Props) {
           />
         )}
         {step === 2 && <Step2 onNext={() => go(3)} />}
-        {step === 3 && (
-          <Step3
-            truong={truong}
-            selected={toHopId}
-            onSelect={setToHopId}
-            onNext={() => go(4)}
-          />
-        )}
+        {step === 3 && <Step3 truong={truong} onNext={() => go(4)} />}
         {step === 4 && (
           <Step4
             hoTen={hoTen}
             setHoTen={setHoTen}
             xepLoai={xepLoai}
             setXepLoai={setXepLoai}
-            diemTS={diemTS}
-            setDiemTS={setDiemTS}
+            diemToan={diemToan}
+            setDiemToan={setDiemToan}
+            diemVan={diemVan}
+            setDiemVan={setDiemVan}
+            diemAnh={diemAnh}
+            setDiemAnh={setDiemAnh}
             monGioi={monGioi}
             setMonGioi={setMonGioi}
             nganh={nganh}
@@ -254,7 +252,6 @@ function Step1({
         desc="Cho chúng mình biết em đang học ở đâu và ở khối lớp nào nhé."
       />
 
-      {/* Câu hỏi 1 */}
       <div className="space-y-3">
         <div className="text-sm font-semibold text-foreground">
           Trường THPT của em là gì?
@@ -310,7 +307,6 @@ function Step1({
         </div>
       </div>
 
-      {/* Câu hỏi 2 */}
       <div className="space-y-3">
         <div className="text-sm font-semibold text-foreground">Em đang học lớp mấy?</div>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -329,9 +325,7 @@ function Step1({
               >
                 <div className="mb-3 flex items-center justify-between">
                   <div className="text-3xl">{g.emoji}</div>
-                  {active && (
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
-                  )}
+                  {active && <CheckCircle2 className="h-5 w-5 text-primary" />}
                 </div>
                 <div className="font-display text-lg font-bold text-foreground">{g.label}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{g.hint}</div>
@@ -367,7 +361,6 @@ function Step2({ onNext }: { onNext: () => void }) {
 
       <div className="grid gap-5 md:grid-cols-2">
         <FrameCard
-          label="Khung 1"
           title="8 MÔN BẮT BUỘC"
           desc="Giống nhau ở mọi tổ hợp"
           items={MON_BAT_BUOC}
@@ -375,22 +368,28 @@ function Step2({ onNext }: { onNext: () => void }) {
           badge="Cố định"
         />
         <FrameCard
-          label="Khung 2"
           title="4 MÔN LỰA CHỌN"
           desc="Học sinh chọn 4 trong các môn sau"
           items={MON_LUA_CHON}
-          tone="from-sky-500/15 to-emerald-500/10"
+          tone="from-primary/10 to-primary/[0.03]"
           badge="Tự chọn"
         />
       </div>
 
-      <div className="rounded-2xl border border-border bg-gradient-to-br from-amber-500/10 to-orange-500/5 p-5">
+      <div className="rounded-2xl border-2 border-primary/25 bg-gradient-to-br from-primary/12 to-primary/5 p-5 shadow-sm">
         <div className="flex items-start gap-3">
-          <Layers className="mt-0.5 h-5 w-5 text-amber-600" />
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl btn-holo">
+            <Layers className="h-4 w-4" />
+          </div>
           <div className="text-sm text-foreground">
-            <span className="font-semibold">Chuyên đề học tập:</span> Mỗi học sinh còn học thêm{" "}
-            <span className="font-semibold text-amber-700">3 cụm chuyên đề</span> gắn với các môn
-            lựa chọn nhằm đào sâu kiến thức, phục vụ định hướng nghề nghiệp và xét tuyển đại học.
+            <div className="mb-1 font-display text-base font-bold text-foreground">
+              Chuyên đề học tập
+            </div>
+            <p className="leading-relaxed">
+              Mỗi học sinh còn học thêm{" "}
+              <span className="font-semibold text-primary">3 cụm chuyên đề</span> gắn với các môn
+              lựa chọn nhằm đào sâu kiến thức, phục vụ định hướng nghề nghiệp và xét tuyển đại học.
+            </p>
           </div>
         </div>
       </div>
@@ -406,14 +405,12 @@ function Step2({ onNext }: { onNext: () => void }) {
 }
 
 function FrameCard({
-  label,
   title,
   desc,
   items,
   tone,
   badge,
 }: {
-  label: string;
   title: string;
   desc: string;
   items: string[];
@@ -422,15 +419,12 @@ function FrameCard({
 }) {
   return (
     <div className={`rounded-2xl border border-border bg-gradient-to-br ${tone} p-5`}>
-      <div className="mb-1 flex items-center justify-between">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {label}
-        </div>
+      <div className="mb-2 flex items-center justify-between">
+        <div className="font-display text-lg font-bold text-foreground">{title}</div>
         <div className="rounded-full bg-card px-2 py-0.5 text-[10px] font-medium text-foreground shadow-sm">
           {badge}
         </div>
       </div>
-      <div className="font-display text-lg font-bold text-foreground">{title}</div>
       <div className="mb-4 text-xs text-muted-foreground">{desc}</div>
       <div className="flex flex-wrap gap-1.5">
         {items.map((m) => (
@@ -446,95 +440,74 @@ function FrameCard({
   );
 }
 
-/* ----------------------------- STEP 3 ----------------------------- */
+/* ----------------------------- STEP 3 (Informational) ----------------------------- */
 
-function Step3({
-  truong,
-  selected,
-  onSelect,
-  onNext,
-}: {
-  truong: string;
-  selected: string;
-  onSelect: (id: string) => void;
-  onNext: () => void;
-}) {
+function Step3({ truong, onNext }: { truong: string; onNext: () => void }) {
   return (
     <div className="card-soft p-8 sm:p-10 space-y-6">
       <Header
         step={3}
         title={`Tổ hợp môn của ${truong || "trường em"}`}
-        desc="Chọn tổ hợp em đã học hoặc muốn tìm hiểu để tiếp tục."
+        desc="Các tổ hợp môn học nhà trường đang tổ chức. Xem để hiểu rõ trước khi tiếp tục."
       />
 
       <div className="grid gap-4 md:grid-cols-2">
-        {TO_HOP.map((t) => {
-          const active = selected === t.id;
-          return (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => onSelect(t.id)}
-              className={`relative overflow-hidden rounded-2xl border p-5 text-left transition-all ${
-                active
-                  ? "border-primary shadow-md ring-2 ring-primary/30"
-                  : "border-border hover:border-primary/50 hover:-translate-y-0.5"
-              } bg-gradient-to-br ${t.tint}`}
-            >
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <div className={`text-[11px] font-semibold uppercase tracking-wider ${t.accent}`}>
-                    {t.id} · {t.lop} lớp
-                  </div>
-                  <div className="font-display text-lg font-bold text-foreground">{t.name}</div>
+        {TO_HOP.map((t) => (
+          <div
+            key={t.id}
+            className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/8 to-primary/[0.02] p-5"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+                  {t.id} · {t.lop} lớp
                 </div>
-                {active && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                <div className="font-display text-lg font-bold text-foreground">{t.name}</div>
               </div>
+            </div>
 
-              <div className="mb-3">
-                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  4 môn lựa chọn
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {t.mon.map((m) => (
-                    <span
-                      key={m}
-                      className="rounded-full bg-card/80 px-2.5 py-0.5 text-xs font-medium text-foreground shadow-sm"
-                    >
-                      {m}
-                    </span>
-                  ))}
-                </div>
+            <div className="mb-4">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                4 môn lựa chọn
               </div>
-
-              <div className="mb-3">
-                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  3 chuyên đề
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {t.chuyen_de.map((m) => (
-                    <span
-                      key={m}
-                      className="rounded-full border border-border bg-transparent px-2.5 py-0.5 text-xs font-medium text-foreground"
-                    >
-                      {m}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex flex-wrap gap-1.5">
+                {t.mon.map((m) => (
+                  <span
+                    key={m}
+                    className="rounded-lg border border-primary/20 bg-card px-3 py-1.5 text-sm font-semibold text-foreground shadow-sm"
+                  >
+                    {m}
+                  </span>
+                ))}
               </div>
+            </div>
 
-              <p className="text-xs leading-relaxed text-muted-foreground">{t.so_luoc}</p>
-            </button>
-          );
-        })}
+            <div className="mb-3">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                3 chuyên đề
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {t.chuyen_de.map((m) => (
+                  <span
+                    key={m}
+                    className="rounded-lg border border-primary/30 bg-primary/8 px-3 py-1.5 text-sm font-semibold text-primary"
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-xs leading-relaxed text-muted-foreground">{t.so_luoc}</p>
+          </div>
+        ))}
       </div>
 
       <button
-        disabled={!selected}
         onClick={onNext}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full btn-holo px-6 py-3.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01]"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full btn-holo px-6 py-3.5 text-sm font-semibold hover:scale-[1.01]"
       >
-        Tiếp tục với {selected || "tổ hợp đã chọn"} <ArrowRight className="h-4 w-4" />
+        Tiếp tục <ArrowRight className="h-4 w-4" />
       </button>
     </div>
   );
@@ -547,8 +520,12 @@ function Step4({
   setHoTen,
   xepLoai,
   setXepLoai,
-  diemTS,
-  setDiemTS,
+  diemToan,
+  setDiemToan,
+  diemVan,
+  setDiemVan,
+  diemAnh,
+  setDiemAnh,
   monGioi,
   setMonGioi,
   nganh,
@@ -561,8 +538,12 @@ function Step4({
   setHoTen: (v: string) => void;
   xepLoai: (typeof XEP_LOAI)[number] | "";
   setXepLoai: (v: (typeof XEP_LOAI)[number]) => void;
-  diemTS: string;
-  setDiemTS: (v: string) => void;
+  diemToan: string;
+  setDiemToan: (v: string) => void;
+  diemVan: string;
+  setDiemVan: (v: string) => void;
+  diemAnh: string;
+  setDiemAnh: (v: string) => void;
   monGioi: string[];
   setMonGioi: (v: string[]) => void;
   nganh: string;
@@ -604,10 +585,18 @@ function Step4({
     }
   };
 
-  const diemNum = Number(diemTS);
-  const validDiem = diemTS !== "" && !Number.isNaN(diemNum) && diemNum >= 0 && diemNum <= 50;
+  const parseScore = (v: string) => {
+    const n = Number(v);
+    return v !== "" && !Number.isNaN(n) && n >= 0 && n <= 10 ? n : null;
+  };
+  const tNum = parseScore(diemToan);
+  const vNum = parseScore(diemVan);
+  const aNum = parseScore(diemAnh);
+  const allValid = tNum !== null && vNum !== null && aNum !== null;
+  const total = allValid ? +(tNum + vNum + aNum).toFixed(2) : null;
+
   const canSubmit =
-    hoTen.trim().length >= 2 && xepLoai && validDiem && monGioi.length === 3 && !submitting;
+    hoTen.trim().length >= 2 && xepLoai && allValid && monGioi.length === 3 && !submitting;
 
   return (
     <div className="card-soft p-8 sm:p-10 space-y-6">
@@ -617,7 +606,6 @@ function Step4({
         desc="Giúp EduPath cá nhân hoá tư vấn tổ hợp môn và ngành học phù hợp nhất."
       />
 
-      {/* Họ và tên */}
       <Field label="Họ và tên">
         <input
           value={hoTen}
@@ -627,7 +615,6 @@ function Step4({
         />
       </Field>
 
-      {/* Xếp loại lớp 9 */}
       <div>
         <div className="mb-1.5 text-sm font-medium text-foreground">Xếp loại năm học lớp 9</div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -651,21 +638,25 @@ function Step4({
         </div>
       </div>
 
-      {/* Điểm tuyển sinh */}
-      <Field label="Điểm tuyển sinh vào lớp 10" hint="Tổng điểm">
-        <input
-          type="number"
-          min={0}
-          max={50}
-          step={0.05}
-          value={diemTS}
-          onChange={(e) => setDiemTS(e.target.value)}
-          placeholder="Ví dụ: 25.5"
-          className="input"
-        />
-      </Field>
+      {/* Điểm 3 môn */}
+      <div>
+        <div className="mb-1.5 text-sm font-medium text-foreground">
+          Điểm tuyển sinh vào lớp 10
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <ScoreInput label="Toán" value={diemToan} onChange={setDiemToan} />
+          <ScoreInput label="Ngữ Văn" value={diemVan} onChange={setDiemVan} />
+          <ScoreInput label="Tiếng Anh" value={diemAnh} onChange={setDiemAnh} />
+        </div>
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5">
+          <span className="text-sm font-medium text-muted-foreground">Điểm tổng (tự động)</span>
+          <span className="font-display text-lg font-bold text-primary">
+            {total !== null ? total : "—"}
+            <span className="ml-1 text-xs font-normal text-muted-foreground">/ 30</span>
+          </span>
+        </div>
+      </div>
 
-      {/* Môn giỏi */}
       <div>
         <div className="mb-1.5 flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">
@@ -701,7 +692,6 @@ function Step4({
         </div>
       </div>
 
-      {/* Ngành dự kiến */}
       <Field label="Ngành học dự kiến" hint="Tuỳ chọn">
         <div className="relative">
           <div className="relative">
@@ -764,8 +754,7 @@ function Step4({
 
       {submitError && (
         <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive">
-          Không lưu được: {submitError}. Vui lòng kiểm tra bảng{" "}
-          <code>public.hoc_sinh_profile</code> đã có các cột và quyền insert cho <code>anon</code>.
+          Không lưu được: {submitError}.
         </div>
       )}
 
@@ -780,11 +769,39 @@ function Step4({
           </>
         ) : (
           <>
-            <Sparkles className="h-4 w-4" /> Hoàn tất & xem gợi ý
+            <Sparkles className="h-4 w-4" /> Hoàn tất & bắt đầu bài test Holland
           </>
         )}
       </button>
     </div>
+  );
+}
+
+function ScoreInput({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block">
+      <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <input
+        type="number"
+        min={0}
+        max={10}
+        step={0.05}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="0 - 10"
+        className="input"
+      />
+    </label>
   );
 }
 

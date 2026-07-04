@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { StudentFlow, type FlowStep, type FlowData } from "@/components/StudentFlow";
+import { HollandTest, type HollandScores } from "@/components/HollandTest";
+import { HollandResults } from "@/components/HollandResults";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,12 +18,12 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Phase = "home" | "flow" | "done";
+type Phase = "home" | "flow" | "holland" | "result";
 
 const STEPS = [
   { id: 1, label: "Khối lớp" },
-  { id: 2, label: "Tổ hợp môn" },
-  { id: 3, label: "Chọn tổ hợp" },
+  { id: 2, label: "Chương trình" },
+  { id: 3, label: "Tổ hợp môn" },
   { id: 4, label: "Thông tin" },
 ];
 
@@ -61,7 +63,15 @@ function PhaseBar({ show, activeIdx }: { show: boolean; activeIdx: number }) {
 function Index() {
   const [phase, setPhase] = useState<Phase>("home");
   const [step, setStep] = useState<FlowStep>(1);
-  const [result, setResult] = useState<FlowData | null>(null);
+  const [profile, setProfile] = useState<FlowData | null>(null);
+  const [scores, setScores] = useState<HollandScores | null>(null);
+
+  const reset = () => {
+    setProfile(null);
+    setScores(null);
+    setStep(1);
+    setPhase("home");
+  };
 
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -74,47 +84,22 @@ function Index() {
             onBack={() => setPhase("home")}
             onStepChange={setStep}
             onComplete={(data) => {
-              setResult(data);
-              setPhase("done");
+              setProfile(data);
+              setPhase("holland");
             }}
           />
         )}
-        {phase === "done" && result && (
-          <section className="min-h-[calc(100vh-4rem)] bg-hero py-16">
-            <div className="mx-auto max-w-2xl px-6 text-center animate-fade-in-up">
-              <div className="card-soft p-10">
-                <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full btn-holo text-2xl">
-                  ✓
-                </div>
-                <h2 className="font-display text-3xl font-bold text-foreground">
-                  Cảm ơn {result.ho_ten}!
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Thông tin của em đã được lưu. Chúng mình sẽ dùng dữ liệu này để đưa ra gợi ý
-                  tổ hợp môn và ngành học phù hợp nhất trong bước tiếp theo.
-                </p>
-                <div className="mt-6 grid gap-2 rounded-2xl border border-border bg-card p-5 text-left text-sm">
-                  <Row k="Trường" v={result.truong} />
-                  <Row k="Khối lớp" v={`Lớp ${result.khoi_lop}`} />
-                  <Row k="Tổ hợp đã chọn" v={result.to_hop_da_chon} />
-                  <Row k="Xếp loại lớp 9" v={result.xep_loai_lop9} />
-                  <Row k="Điểm tuyển sinh" v={String(result.diem_tuyen_sinh)} />
-                  <Row k="Môn giỏi" v={result.mon_gioi.join(", ")} />
-                  {result.nganh_du_kien && <Row k="Ngành dự kiến" v={result.nganh_du_kien} />}
-                </div>
-                <button
-                  onClick={() => {
-                    setResult(null);
-                    setPhase("home");
-                    setStep(1);
-                  }}
-                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary/60 hover:text-primary"
-                >
-                  Về trang chủ
-                </button>
-              </div>
-            </div>
-          </section>
+        {phase === "holland" && (
+          <HollandTest
+            onBack={() => setPhase("flow")}
+            onDone={(s) => {
+              setScores(s);
+              setPhase("result");
+            }}
+          />
+        )}
+        {phase === "result" && scores && (
+          <HollandResults scores={scores} name={profile?.ho_ten} onHome={reset} />
         )}
       </main>
       <footer id="lien-he" className="border-t border-border bg-card/50 py-8">
@@ -122,15 +107,6 @@ function Index() {
           © {new Date().getFullYear()} EduPath · Định hướng tổ hợp môn THPT bằng AI · Made in Vietnam
         </div>
       </footer>
-    </div>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex items-start justify-between gap-4">
-      <span className="text-muted-foreground">{k}</span>
-      <span className="text-right font-medium text-foreground">{v}</span>
     </div>
   );
 }
