@@ -149,22 +149,26 @@ export default function HollandSubjectSuggestion({ scores, onBack }: Props) {
 
         const comboScored: ComboResult[] = [];
         for (const [to_hop_mon, info] of comboMap) {
-          let total = 0;
           const nganhHits: { ten: string; sim: number; isTop3: boolean }[] = [];
           for (const n of topNganhForScoring) {
             const codes = nganhCodes.get(n.ma_nganh) || [];
             if (codes.some((c) => info.codes.has(c))) {
-              total += Math.max(0, n.sim);
               nganhHits.push({
                 ten: n.ten_nganh,
-                sim: n.sim,
+                sim: Math.max(0, n.sim),
                 isTop3: top3Codes.has(n.ma_nganh),
               });
             }
           }
+          // Trung bình cộng chỉ số Cosine của các ngành phù hợp nhất
+          // mà tổ hợp đó tham gia xét tuyển, chuẩn hoá về thang 100.
+          const sortedSims = [...nganhHits].sort((a, b) => b.sim - a.sim);
+          const K = Math.min(5, sortedSims.length);
+          const avg =
+            K > 0 ? sortedSims.slice(0, K).reduce((s, x) => s + x.sim, 0) / K : 0;
           comboScored.push({
             to_hop_mon,
-            score_pct: total,
+            score_pct: Math.round(Math.min(1, Math.max(0, avg)) * 100),
             mon_list: Array.from(info.mons),
             admission_codes: Array.from(info.codes).sort(),
             nganh_top: nganhHits
@@ -175,12 +179,7 @@ export default function HollandSubjectSuggestion({ scores, onBack }: Props) {
         }
 
         comboScored.sort((a, b) => b.score_pct - a.score_pct);
-        const top4 = comboScored.slice(0, 4);
-        const maxScore = top4[0]?.score_pct || 1;
-        const normalized = top4.map((c) => ({
-          ...c,
-          score_pct: Math.round((c.score_pct / maxScore) * 100),
-        }));
+        const normalized = comboScored.slice(0, 4);
 
         if (!cancelled) setCombos(normalized);
       } catch (e: any) {
