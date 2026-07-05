@@ -111,7 +111,7 @@ function Index() {
         )}
         {/* 3. Hiển thị component gợi ý */}
         {phase === "suggestion" && (
-            <HollandSubjectSuggestion />
+          <HollandSubjectSuggestion scores={scores} onBack={() => setPhase("result")} />
         )}
       </main>
       <footer id="lien-he" className="border-t border-border bg-card/50 py-8">
